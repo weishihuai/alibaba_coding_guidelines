@@ -1,6 +1,6 @@
 package com.wsh.coding.guidelines.programmingcode;
 
-import java.util.Objects;
+import java.util.*;
 
 /**
  * @Title: NamingStyleTest
@@ -184,11 +184,141 @@ public class NamingStyleTest {
         }
 
         /**
-         * 要点19:
+         * 要点19: 类成员以及方法尽量严格控制访问权限
+         * 1） 如果不允许外部直接通过new来创建对象，那么构造方法必须是private。
+         * 2） 工具类不允许有public或default构造方法。
+         * 3） 类非static成员变量并且与子类共享，必须是protected。
+         * 4） 类非static成员变量并且仅在本类使用，必须是private。
+         * 5） 类static成员变量如果仅在本类使用，必须是private。
+         * 6） 若是static成员变量，必须考虑是否为final。
+         * 7） 类成员方法只供类内部调用，必须是private。
+         * 8） 类成员方法只对继承类公开，那么限制为protected。
          */
 
+        /**
+         * 要点20: 关于hashCode和equals的处理，遵循如下规则：
+         * 1） 只要重写equals，就必须重写hashCode。
+         * 2） 因为Set存储的是不重复的对象，依据hashCode和equals进行判断，所以Set存储的对象必须重写这两个方法。
+         * 3） 如果自定义对象做为Map的键，那么必须重写hashCode和equals。
+         * 说明：String重写了hashCode和equals方法，所以我们可以非常愉快地使用String对象作为key来使用。
+         */
+
+        /**
+         * 要点21: 使用集合转数组的方法，使用集合的toArray(T[] array)，传入的是类型完全一样的数组，大小就是list.size()。
+         */
+        List<String> namesList = new ArrayList<>();
+        namesList.add("zhangsan");
+        namesList.add("lisi");
+        String[] namesArr = new String[namesList.size()];
+        //不推荐用法
+//        Object[] array = namesList.toArray();
+        //推荐用法
+        namesArr = namesList.toArray(namesArr);
+        System.out.println(Arrays.toString(namesArr));
+
+        /**
+         * 要点22: 不要在foreach循环里进行元素的remove/add操作。remove元素请使用Iterator方式，如果并发操作，需要对Iterator对象加锁。
+         */
+        //不推荐用法
+        List<String> list = new ArrayList<>();
+        list.add("1");
+        list.add("2");
+        for (String item : list) {
+            if ("1".equals(item)) {
+                list.remove(item);
+            }
+        }
+
+        //推荐用法
+        Iterator<String> iterator = list.iterator();
+        while (iterator.hasNext()) {
+            String item = iterator.next();
+            if ("1".equals(item)) {
+                iterator.remove();
+            }
+        }
+
+
+        /**
+         * 要点23: 尽量使用entrySet遍历Map类集合KV，而不是keySet方式进行遍历
+         * 说明: ：keySet其实是遍历了2次，一次是转为Iterator对象，另一次是从hashMap中取出key所对应的value。而entrySet只是遍历了一次就把key和value都放到了entry中，效率更高
+         */
+        //推荐用法
+        Map<String, Object> map = new HashMap<>();
+        map.put("name", "weixiaohuai");
+        map.put("sex", "male");
+        map.put("age", "20");
+        Set<Map.Entry<String, Object>> entrySet = map.entrySet();
+        for (Map.Entry<String, Object> entry : entrySet) {
+            String entryKey = entry.getKey();
+            Object entryValue = entry.getValue();
+            System.out.println(entryKey + ", " + entryValue);
+        }
+
+        //不推荐用法
+        Set<String> keySet = map.keySet();
+        for (String k : keySet) {
+            Object value = map.get(k);
+            System.out.println(k + ", " + value);
+        }
+
+
+        /**
+         * 要点24: 在一个switch块内，每个case要么通过break/return等来终止，要么注释说明程序将继续执行到哪一个case为止；在一个switch块内，都必须包含一个default语句并且放在最后，即使它什么代码也没有
+         */
+        //推荐用法
+        String switchKey = "a";
+        switch (switchKey) {
+            case "a":
+                break;
+            case "b":
+            case "c":
+                break;
+            default:
+                break;
+        }
+
+        /**
+         * 要点25: 获取当前毫秒数尽量使用System.currentTimeMillis(); 而不是new Date().getTime();
+         */
+        //不推荐用法
+        long currentTimeMillis = System.currentTimeMillis();
+
+        //推荐用法
+        long time = new Date().getTime();
+
+        /**
+         * 要点26: 在使用可能抛出运行时异常的代码时，尽量使用预先检查机制来规避运行时异常，不应该使用try-catch来处理这些运行时异常
+         */
+        //不推荐用法
+        Person p = null;
+        try {
+            p.sayHello();
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
+
+        //推荐用法
+        if (null != p) {
+            p.sayHello();
+        }
+
+
+        /**
+         * 要点27: 不能在finally块中使用return，finally块中的return返回后方法结束执行，不会再执行try块中的return语句
+         */
 
     }
 
+    public String say() {
+        try {
+            //...
+            return "a";
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            return "b";
+        }
+    }
 
 }
