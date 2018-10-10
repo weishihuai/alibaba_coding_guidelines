@@ -55,7 +55,7 @@ public class JavaCodeOptimize {
          * 优化方法3: for循环遍历的时候尽量减少对变量(集合长度)的重复计算
          */
         //不推荐用法
-        List<String> list = new ArrayList<>();
+        List<String> list = new ArrayList<>(10);
         list.add("zhangsan");
         list.add("lisi");
         for (int i = 0; i < list.size(); i++) {
@@ -171,7 +171,7 @@ public class JavaCodeOptimize {
         /**
          * 优化方法12: 使用效率高的方法遍历Map,尽量使用entrySet，直接将key/value都查询出来。
          */
-        Map<String, Object> map = new HashMap<>();
+        Map<String, Object> map = new HashMap<>(10);
         map.put("name", "weixiaohuai");
         map.put("age", "20");
         Set<Map.Entry<String, Object>> entries = map.entrySet();
@@ -182,9 +182,40 @@ public class JavaCodeOptimize {
 
 
         /**
-         * 优化方法13:
+         * 优化方法13: 底层使用可变数组的数据结构尽量指定长度
+         * 说明: 当指定长度时，只有在超过指定的长度时，才会执行扩容操作，使用的时候应尽量预估它的大小，尽量指定大小
          */
+        //推荐用法
+        List<String> newList = new ArrayList<>(10);
+        Map<String, Object> newMap = new HashMap<>(10);
 
+        /**
+         * 优化方法14: String类尽量使用StringBuffer、StringBuilder
+         */
+        //不推荐用法
+        //java 虚拟机会在堆中创建三个变量，"wei" 、"xiaohuai"、 "weixiaohuai,最终newName指向"weixiaohuai"，"wei"、"xiaohuai"就没有对象引用它们，需要GC回收，耗性能
+        String newNamePrefix = "wei";
+        String newName = newNamePrefix + "xiaohuai";
+
+        //推荐用法
+        //java虚拟机只会在堆中开辟一个空间"wei",执行append时只会在 "wei" 的空间上 + "xiaohuai" , 避免了GC的回收，也避免了内存的浪费
+        StringBuilder sb = new StringBuilder("wei");
+        sb.append("xiaohuai");
+
+        /**
+         * 要点15: 尽可能多使用三目运算符，代码看起来会比较清晰
+         * 说明: 对于if-else结构的，视情况优化为三目运算符
+         */
+        //不推荐用法
+        int a = 10;
+        if (a > 10) {
+            System.out.println("a大于10");
+        } else {
+            System.out.println("a小于10");
+        }
+
+        //推荐用法
+        System.out.println(a > 10 ? "a大于10" : "a小于10");
 
     }
 

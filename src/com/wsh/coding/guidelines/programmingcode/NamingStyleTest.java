@@ -206,7 +206,7 @@ public class NamingStyleTest {
         /**
          * 要点21: 使用集合转数组的方法，使用集合的toArray(T[] array)，传入的是类型完全一样的数组，大小就是list.size()。
          */
-        List<String> namesList = new ArrayList<>();
+        List<String> namesList = new ArrayList<>(10);
         namesList.add("zhangsan");
         namesList.add("lisi");
         String[] namesArr = new String[namesList.size()];
@@ -220,7 +220,7 @@ public class NamingStyleTest {
          * 要点22: 不要在foreach循环里进行元素的remove/add操作。remove元素请使用Iterator方式，如果并发操作，需要对Iterator对象加锁。
          */
         //不推荐用法
-        List<String> list = new ArrayList<>();
+        List<String> list = new ArrayList<>(10);
         list.add("1");
         list.add("2");
         for (String item : list) {
@@ -244,7 +244,7 @@ public class NamingStyleTest {
          * 说明: ：keySet其实是遍历了2次，一次是转为Iterator对象，另一次是从hashMap中取出key所对应的value。而entrySet只是遍历了一次就把key和value都放到了entry中，效率更高
          */
         //推荐用法
-        Map<String, Object> map = new HashMap<>();
+        Map<String, Object> map = new HashMap<>(10);
         map.put("name", "weixiaohuai");
         map.put("sex", "male");
         map.put("age", "20");
